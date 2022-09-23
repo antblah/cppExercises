@@ -91,6 +91,8 @@ std::string getText() const;
 
 int getCursor() const;
 
+
+
 private:
 /*
 * Implementation Notes:  Buffer Data Structure
@@ -120,10 +122,5 @@ const EditorBuffer & operator = (const EditorBuffer & rhs) {
 void expandCapacity();
 
 };
-
-
-
-
-
 
 #endif
