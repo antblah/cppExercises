@@ -73,3 +73,33 @@ void EditorBuffer::deleteCharacter() {
     }
 }
 
+
+/*
+* Implementation notes:   Get methods: getText, getCursor
+* -------------------------------------------------------
+* 
+*/
+
+string EditorBuffer::getText() const {
+    return string(array, length);
+}
+
+int EditorBuffer::getCursor() const {
+    return cursor;
+}
+
+/*
+* Implementation notes:   Expand Capacity
+* -------------------------------------------------------
+* 
+*/
+
+void EditorBuffer::expandCapacity() {
+    char *oldarray = array;
+    capacity *= 2;
+    array = new char[capacity];
+    for(int i = 0; i < length; i++) {
+        array[i] = oldarray[i];
+    }
+    delete[] oldarray;
+}
