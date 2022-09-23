@@ -18,49 +18,24 @@ void displayBuffer(EditorBuffer & buffer);
 void printHelpText();
 
 
+/* Main */
 int main() {
     EditorBuffer buffer;
     while(true) {
-        string cmd getLine("*");
+        string cmd = getLine("*");
         if (cmd != "") executeCommand(buffer, cmd);
     }
+
     return 0;
 }
 
-
-
-
-
-
-/*
-* Function:  Execute Command
-* -------------------------------------------------------
-* Executes the commands as specified by the buffer
-*/
-
-void executeCommand(EditorBuffer & buffer, string line) {
-    switch(toupper(line[0])) {
-        case 'I': foreach(char ch in line) {
-            buffer.insertCharacter(ch);
-        }
-        displayBuffer(buffer);
-        break;
-        case 'D': deleteCharacter(); displayBuffer(buffer);
-        case 'F': moveCursorForward(); displayBuffer(buffer);
-        case 'B': moveCursorBackward(); displayBuffer(buffer);
-        case 'J': moveCursorToStart(); displayBuffer(buffer);
-        case 'E': moveCursorToEnd(); displayBuffer(buffer);
-        case 'H': printHelpText(); break;
-        case 'Q': exit(0);
-        default: cout << "Illegal entry."  << endl; break; 
-    }
-}
 
 /*
 * Function: displayBuffer
 * -------------------------------------------------------
 * Displays the state of the buffer including the position of the cursor.
 */
+
 void displayBuffer(EditorBuffer & buffer) {
     string str = buffer.getText();
     for(int i = 0; i < str.length(); i++) {
@@ -89,5 +64,122 @@ void printHelpText() {
     cout << "Q: Exits the editor program." << endl;
 }
 
+/*
+* Implementation notes:  Constructor and destructor
+* -------------------------------------------------------
+* 
+*/
+
+EditorBuffer::EditorBuffer() {
+    capacity = INITIAL_CAPACITY;
+    array = new char[capacity];
+    length = 0;
+    cursor = 0;
+}
+
+EditorBuffer::~EditorBuffer() {
+    delete[] array;
+}
+
+/*
+* Implementation notes:  moveCursor Methods
+* -------------------------------------------------------
+* 
+*/
+void EditorBuffer::moveCursorForward() {
+    if(cursor < length) cursor++;
+}
+
+void EditorBuffer::moveCursorBackward() {
+    if(cursor > length) cursor--;
+}
+
+void EditorBuffer::moveCursorToStart() {
+    cursor = 0;
+}
+
+void EditorBuffer::moveCursorToEnd() {
+    cursor = length; 
+}
 
 
+/*
+* Implementation notes:  Insertion and Deletion
+* -------------------------------------------------------
+* 
+*/
+
+void EditorBuffer::insertCharacter(char ch) {
+    if(cursor == length) expandCapacity();
+    for(int i = length; i > cursor; i--) {
+        array[i] = array[i - 1];
+    }
+
+    array[cursor] = ch;
+    length++;
+    cursor++;
+}
+
+void EditorBuffer::deleteCharacter() {
+    if(cursor < length) {
+        for(int i = cursor + 1; i < length; i++) {
+            array[i - 1] = array[i];
+        }
+        length--;
+    }
+}
+
+
+/*
+* Implementation notes:   Get methods: getText, getCursor
+* -------------------------------------------------------
+* 
+*/
+
+string EditorBuffer::getText() const {
+    return string(array, length);
+}
+
+int EditorBuffer::getCursor() const {
+    return cursor;
+}
+
+/*
+* Implementation notes:   Expand Capacity
+* -------------------------------------------------------
+* 
+*/
+
+void EditorBuffer::expandCapacity() {
+    char *oldarray = array;
+    capacity *= 2;
+    array = new char[capacity];
+    for(int i = 0; i < length; i++) {
+        array[i] = oldarray[i];
+    }
+    delete[] oldarray;
+}
+
+/*
+* Function:  Execute Command
+* -------------------------------------------------------
+* Executes the commands as specified by the buffer
+*/
+
+void executeCommand(EditorBuffer & buffer, string line) {
+    switch(toupper(line[0])) {
+        case 'I': foreach(char ch in line) {
+            buffer.insertCharacter(ch);
+        }
+        displayBuffer(buffer);
+        break;
+        case 'D': buffer.deleteCharacter(); displayBuffer(buffer); break;
+        case 'F': buffer.moveCursorForward(); displayBuffer(buffer); break;
+        case 'B': buffer.moveCursorBackward(); displayBuffer(buffer); break;
+        case 'J': buffer.moveCursorToStart(); displayBuffer(buffer); break;
+        case 'E': buffer.moveCursorToEnd(); displayBuffer(buffer); break;
+        case 'H': printHelpText(); break;
+        case 'Q': exit(0);
+        default: cout << "Illegal entry."  << endl; break; 
+    }
+}
