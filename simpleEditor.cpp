@@ -17,6 +17,21 @@ void executeCommand(EditorBuffer & buffer, string line);
 void displayBuffer(EditorBuffer & buffer);
 void printHelpText();
 
+
+int main() {
+    EditorBuffer buffer;
+    while(true) {
+        string cmd getLine("*");
+        if (cmd != "") executeCommand(buffer, cmd);
+    }
+    return 0;
+}
+
+
+
+
+
+
 /*
 * Function:  Execute Command
 * -------------------------------------------------------
@@ -76,7 +91,3 @@ void printHelpText() {
 
 
 
-int main() {
-
-    return 0;
-}
